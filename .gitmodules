@@ -1,0 +1,4 @@
+[submodule "ext2-db-engine"]
+	path = ext2-db-engine
+	url = git@github.com:joaomoraski/ext2-fs-tools.git
+	branch = db-engine
