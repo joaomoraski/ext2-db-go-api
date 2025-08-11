@@ -60,7 +60,6 @@ func convert_to_entity(output []string) []UserResponse {
 				case "id":
 					record.ID, _ = strconv.Atoi(value)
 				case "is_active":
-					fmt.Println(value)
 					record.IsActive, _ = strconv.Atoi(value)
 				case "username":
 					record.Username = value
