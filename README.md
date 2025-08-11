@@ -1,73 +1,79 @@
-# EXT2-DB: Um "mini-db" usando EXT2 com API em Go
+# EXT2-DB: A "mini-db" using EXT2 with a Go API
 
-Este projeto é a união de um trabalho realizado durante o curso de Ciencia da Computação, que tinha como objetivo a
-criação de um Shell Interativo para rodar comando em cima de uma imagem(.iso ou .img) usando o Sistema de Arquivos EXT2
-com uma API em Go, utilizando estas operaçǒes desenvolvidas no trabalho como um "banco de dados".
+This project combines a Computer Science course assignment that aimed to create an **interactive shell** for running commands on a `.iso` or `.img` disk image using the EXT2 filesystem, with a Go API, leveraging these developed operations as a "database."
 
-[Link para o projeto do EXT2](https://github.com/joaomoraski/ext2-fs-tools/tree/master) (trocar para branch `db-engine`
-para este projeto)
+[Link to the EXT2 project](https://github.com/joaomoraski/ext2-fs-tools/tree/master) (switch to the `db-engine` branch for this project)
 
-## Arquitetura
+## Architecture
 
-O sistema é composto por dois componentes principais que se comunicam via I/O padrão (`stdin`/`stdout`):
+The system consists of two main components that communicate via standard I/O (`stdin`/`stdout`):
 
-1. **Banco de dados (`ext2-db-engine`):** Uma ferramenta de linha de comando em C, compilada a partir do
-   projeto original, que manipula diretamente uma imagem de disco no formato EXT2. Ela é responsável por todas as
-   operações de baixo nível, como alocação de inodes, manipulação de bitmaps e escrita/leitura de blocos de dados.
-2. **API em Go:** Uma API RESTful simples, que expõe endpoints para operações de **Criar** e **Listar(com filtros)** em
-   um "banco de dados" de usuários. Ela trata as requisições HTTP, valida os dados e chama o "banco de dados" em C para
-   persistir ou recuperar as informações.
+1. **Database (`ext2-db-engine`):**  
+   A C command-line tool compiled from the original project, which directly manipulates an EXT2 disk image.  
+   It handles all low-level operations, such as inode allocation, bitmap manipulation, and block read/write.
 
-## Como Rodar o Projeto
+2. **Go API:**  
+   A simple RESTful API that exposes endpoints for **Create** and **List (with filters)** operations on a "user database."  
+   It processes HTTP requests, validates data, and calls the C "database" to persist or retrieve information.
 
-### Pré-requisitos
+## How to Run the Project
 
-* Compilador GCC
-* Biblioteca `readline` (`sudo apt-get install libreadline-dev` ou similar)
-* Go (versão 1.18 ou superior)
+### Prerequisites
 
-### Compilação e Execução
+* GCC compiler
+* `readline` library (`sudo apt-get install libreadline-dev` or equivalent)
+* Go (version 1.18 or higher)
 
-O projeto utiliza um `Makefile` na raiz do sub-módulo `ext2-fs-tools` para compilar o motor em C e um `Makefile` na raiz
-do projeto `ext2-db-go-api` para orquestrar tudo.
+### Compilation and Execution
 
-1. **Compile o motor em C:**
+The project uses a `Makefile` in the root of the `ext2-fs-tools` submodule to compile the C engine and a `Makefile` in the `ext2-db-go-api` root to orchestrate everything.
+
+1. **Compile the C engine:**
    ```bash
    cd ext2-db-engine
    make all
    cd ..
-   ```
 
-   1.1 **Para gerar uma imagem nova**
-   ```bash
-      make generate-ext2
-   ```
+1.1 **Generate a new image**
 
-   1.2 **Criando a tabela**
-   ```bash
-      make run
-   ```
-   Dentro do terminal que sera iniciado, crie a database com o comando `touch user_record`
+```bash
+make generate-ext2
+```
 
-2. **Inicie a API em Go:**
-   Na raiz do projeto, execute:
+1.2 **Creating the table**
+
+```bash
+make run
+```
+
+Inside the terminal that opens, create the database with the command:
+
+```bash
+touch user_record
+```
+
+2. **Start the Go API:**
+   In the project root, run:
+
    ```bash
    cd api
    go run .
    ```
-   O servidor estará rodando em `http://localhost:8080`.
+
+   The server will be running at `http://localhost:8080`.
 
 ---
 
-## Como Usar a API
+## How to Use the API
 
-A API expõe os seguintes endpoints para a entidade `User`:
+The API exposes the following endpoints for the `User` entity:
 
-### Criar um Novo Usuário
+### Create a New User
 
 * **Endpoint:** `POST /users`
-* **Descrição:** Cria um novo registro de usuário no arquivo `/user_record` dentro da imagem EXT2.
-* **Corpo da Requisição (JSON):**
+* **Description:** Creates a new user record in the `/user_record` file inside the EXT2 image.
+* **Request Body (JSON):**
+
   ```json
   {
       "id": 1,
@@ -75,12 +81,13 @@ A API expõe os seguintes endpoints para a entidade `User`:
       "username": "moraski",
       "email": "moraski@gmail.com"
   }
+  ```
 
-### Buscar Usuários
+### Fetch Users
 
 * **Endpoint:** `GET /users`
-* **Descrição:** Retorna uma lista de todos os usuários cadastrados.
+* **Description:** Returns a list of all registered users.
 * **Query Parameters:**
-    * limit=<numero>: Limita o número de resultados.
-    * filters=<condições>: (Opcional) Filtra os resultados. As condições devem estar no padrão `field:operator:value`.
-        * Suporta =, %
+    * `limit=<number>`: Limits the number of results.
+    * `filters=<conditions>`: (Optional) Filters results. Conditions must follow the pattern `field:operator:value`.
+        * Supports `=`, `%`
